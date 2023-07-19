@@ -1,3 +1,18 @@
+# SmartBrain
+
+<img 
+  src="./src/assets/images/icons8-brain-100.png"
+  alt="Brain"
+  width="200"
+  loading="lazy"
+/>
+
+Facial recognition application.
+
+Built with: ```React.js, Tailwind CSS```.
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
