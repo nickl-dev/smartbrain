@@ -1,4 +1,4 @@
-const ImageLinkForm = () => {
+const ImageLinkForm = ({ onInputChange, onButtonSubmit }) => {
   return (
     <div className="p-4">
       <p className="text-neutral-50">{'SmartBrain will detect faces in your pictures. Paste a URL below to see what happens!'}</p>
@@ -7,10 +7,16 @@ const ImageLinkForm = () => {
         <input 
           type="text" 
           className="rounded-l w-full outline-none px-2 py-1 focus:bg-cyan-50" 
-          placeholder={'Paste URL here...'} 
+          placeholder={'Paste URL here...'}
+          onChange={onInputChange}
         />
         
-        <button className="bg-purple-500 p-2 rounded-r font-semibold text-neutral-50 outline-none focus:bg-purple-600 hover:bg-purple-600">{'Detect'}</button>
+        <button 
+          className="bg-purple-500 p-2 rounded-r font-semibold text-neutral-50 outline-none focus:bg-purple-600 hover:bg-purple-600"
+          onClick={onButtonSubmit}
+          >
+            {'Detect'}
+          </button>
       </div>
     </div>
   )
