@@ -1,11 +1,13 @@
 import './App.css';
-import Navigation from './components/Navigation/Navigation';
-import Logo from './components/Logo/Logo';
+import FaceDetection from './components/FaceDetection/FaceDetection';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
+import Logo from './components/Logo/Logo';
+import Navigation from './components/Navigation/Navigation';
+import ParticlesBg from 'particles-bg'
 import Rank from './components/Rank/Rank';
 import React, { Component } from 'react';
-import ParticlesBg from 'particles-bg'
-import FaceDetection from './components/FaceDetection/FaceDetection';
+import Register from './components/Register/Register';
+import SignIn from './components/SignIn/SignIn';
 
 class App extends Component {
 
@@ -14,7 +16,9 @@ class App extends Component {
     this.state = {
       imageUrl: '',
       input: '',
-      faceBoundsBox: {}
+      faceBoundsBox: {},
+      isSignedIn: false,
+      route: 'signin'
     };
   }
 
@@ -27,7 +31,36 @@ class App extends Component {
     this.getFaceDetectionData()
   }
 
-  getClarifaiApiOptions = (imageUrl) => {
+  onRouteChange = (route) => {
+    if (route === 'signout') {
+      this.setState({ isSignedIn: false })
+    } else if (route === 'home') {
+      this.setState({ isSignedIn: true })
+    }
+    this.setState({route: route});
+  }
+
+
+  calculateFaceLocation = (data) => {
+    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
+    const image = document.getElementById('input-image');
+    const width = Number(image.width);
+    const height = Number(image.height);
+
+    return {
+      leftCol: clarifaiFace.left_col * width,
+      topRow: clarifaiFace.top_row * height,
+      rightCol: width - (clarifaiFace.right_col * width),
+      bottomRow: height - (clarifaiFace.bottom_row * height)
+    }
+  }
+
+  displayFaceBox = (faceBoundsBox) => {
+    this.setState({ faceBoundsBox });
+  }
+
+  getClarifaiApiOptions = (imageUrl = this.state.imageUrl) => {
+    
     const { REACT_APP_CLARIFAI_API_PAT, REACT_APP_CLARIFAI_API_USER_ID, REACT_APP_CLARIFAI_API_APP_ID } = process.env;
     // Your PAT (Personal Access Token) can be found in the portal under Authentification
     // Specify the correct user_id/app_id pairings
@@ -68,58 +101,53 @@ class App extends Component {
     // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
     // this will default to the latest version_id
     try {
-      const response = 
-        await fetch(`https://api.clarifai.com/v2/models/face-detection/outputs`, 
-          this.getClarifaiApiOptions(this.state.imageUrl)
-        );
+      const response = await fetch(`https://api.clarifai.com/v2/models/face-detection/outputs`, this.getClarifaiApiOptions());
 
       const data = await response.json();
+      console.log(data)
       this.displayFaceBox(this.calculateFaceLocation(data));
     } catch (error) {
       throw error;
     }
   }
 
-  calculateFaceLocation = (data) => {
-    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
-    const image = document.getElementById('input-image');
-    const width = Number(image.width);
-    const height = Number(image.height);
-
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - (clarifaiFace.right_col * width),
-      bottomRow: height - (clarifaiFace.bottom_row * height)
-    }
-  }
-
-  displayFaceBox = (box) => {
-    this.setState({ faceBoundsBox: box });
-  }
-
   render () {
+    const { route, isSignedIn, faceBoundsBox, imageUrl } = this.state;
+    
     return (
       <div className="App">
         <ParticlesBg 
-          type="lines" 
           bg={true} 
           num={30} 
-        />  
-
-        <Navigation />
-        <Logo />
-        <Rank rank={4}/>
-
-        <ImageLinkForm 
-          onInputChange={this.onInputChange} 
-          onButtonSubmit={this.onButtonSubmit} 
+          type="lines" 
         />
 
-        <FaceDetection
-          box={this.state.faceBoundsBox} 
-          imageUrl={this.state.imageUrl} 
+        <Navigation 
+          isSignedIn={isSignedIn} 
+          onRouteChange={this.onRouteChange} 
         />
+
+        { route === 'home' ?
+          <>
+            <Logo />
+            <Rank rank={4}/>
+
+            <ImageLinkForm 
+              onInputChange={this.onInputChange} 
+              onButtonSubmit={this.onButtonSubmit} 
+            />
+
+            <FaceDetection
+              box={faceBoundsBox} 
+              imageUrl={imageUrl} 
+            />
+          </>
+        : (
+          route === 'signin' 
+            ? <SignIn onRouteChange={this.onRouteChange} />
+            : <Register onRouteChange={this.onRouteChange} />
+          )
+        }
       </div>
     );
   }
