@@ -59,7 +59,7 @@ class App extends Component {
     this.setState({ faceBoundsBox });
   }
 
-  getClarifaiApiOptions = (imageUrl = this.state.imageUrl) => {
+  getClarifaiApiOptions = (imageUrl) => {
     
     const { REACT_APP_CLARIFAI_API_PAT, REACT_APP_CLARIFAI_API_USER_ID, REACT_APP_CLARIFAI_API_APP_ID } = process.env;
     // Your PAT (Personal Access Token) can be found in the portal under Authentification
@@ -72,8 +72,8 @@ class App extends Component {
   
     const raw = JSON.stringify({
         "user_app_id": {
-            "user_id": REACT_APP_CLARIFAI_API_USER_ID,
-            "app_id": REACT_APP_CLARIFAI_API_APP_ID
+            "user_id": 'nickl-dev',
+            "app_id": 'nickl-dev-smartbrain'
         },
         "inputs": [
             {
@@ -90,7 +90,7 @@ class App extends Component {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Authorization': 'Key ' + REACT_APP_CLARIFAI_API_PAT
+            'Authorization': 'Key ' + 'f0bd10445ce84317bf00bf9c7ba74ee2'
         },
         body: raw
     };
@@ -101,7 +101,9 @@ class App extends Component {
     // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
     // this will default to the latest version_id
     try {
-      const response = await fetch(`https://api.clarifai.com/v2/models/face-detection/outputs`, this.getClarifaiApiOptions());
+      const response = await fetch(`https://api.clarifai.com/v2/models/face-detection/outputs`, 
+      this.getClarifaiApiOptions(this.state.input)
+    );
 
       const data = await response.json();
       console.log(data)
