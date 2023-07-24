@@ -1,4 +1,3 @@
-import './App.css';
 import FaceDetection from './components/FaceDetection/FaceDetection';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Logo from './components/Logo/Logo';
@@ -117,11 +116,11 @@ class App extends Component {
     const { route, isSignedIn, faceBoundsBox, imageUrl } = this.state;
     
     return (
-      <div className="App">
+      <div className="App h-screen text-center">
         <ParticlesBg 
           bg={true} 
           num={30} 
-          type="lines" 
+          type="lines"
         />
 
         <Navigation 
