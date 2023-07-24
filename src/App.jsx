@@ -72,8 +72,8 @@ class App extends Component {
   
     const raw = JSON.stringify({
         "user_app_id": {
-            "user_id": 'nickl-dev',
-            "app_id": 'nickl-dev-smartbrain'
+            "user_id": REACT_APP_CLARIFAI_API_USER_ID,
+            "app_id": REACT_APP_CLARIFAI_API_APP_ID
         },
         "inputs": [
             {
@@ -90,7 +90,7 @@ class App extends Component {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
-            'Authorization': 'Key ' + 'f0bd10445ce84317bf00bf9c7ba74ee2'
+            'Authorization': 'Key ' + REACT_APP_CLARIFAI_API_PAT
         },
         body: raw
     };
