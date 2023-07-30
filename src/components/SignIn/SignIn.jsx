@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 class SignIn extends Component {
   constructor (props) {
@@ -20,19 +20,26 @@ class SignIn extends Component {
   
   onSubmitSignin = async (event) => {
     event.preventDefault();
-
-    const response = await fetch('http://localhost:3000/signin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: this.state.signInEmail,
-        password: this.state.signInPassword
+    
+    try {
+      const response = await fetch('http://localhost:3000/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: this.state.signInEmail,
+          password: this.state.signInPassword
+        })
       })
-    })
 
-    const data = await response.json();
-
-    if (data === 'success') this.props.onRouteChange('home');
+      const user = await response.json();
+  
+      if (user.id) {
+        this.props.loadUser(user);
+        this.props.onRouteChange('home');
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   render () {

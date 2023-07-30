@@ -17,7 +17,14 @@ class App extends Component {
       input: '',
       faceBoundsBox: {},
       isSignedIn: false,
-      route: 'signin'
+      route: 'signin',
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: ''
+      }
     };
   }
 
@@ -36,7 +43,21 @@ class App extends Component {
     } else if (route === 'home') {
       this.setState({ isSignedIn: true })
     }
-    this.setState({route: route});
+    this.setState({ route: route });
+  }
+
+  updateEntries = (count) => {
+    this.setState(Object.assign(this.state.user, { entries: count }))
+  }
+
+  loadUser = (data) => {
+    this.setState({ user: {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    }})
   }
 
 
@@ -105,7 +126,19 @@ class App extends Component {
     );
 
       const data = await response.json();
-      console.log(data)
+
+      if (data) {
+        const entryResponse = await fetch('http://localhost:3000/image', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: this.state.user.id })
+        })
+
+        const entryData = await entryResponse.json();
+
+        if (entryData) this.setState(Object.assign(this.state.user, { entries: entryData }))
+      }
+      
       this.displayFaceBox(this.calculateFaceLocation(data));
     } catch (error) {
       throw error;
@@ -113,7 +146,7 @@ class App extends Component {
   }
 
   render () {
-    const { route, isSignedIn, faceBoundsBox, imageUrl } = this.state;
+    const { route, isSignedIn, faceBoundsBox, imageUrl, user } = this.state;
     
     return (
       <div className="App h-screen text-center">
@@ -131,7 +164,10 @@ class App extends Component {
         { route === 'home' ?
           <>
             <Logo />
-            <Rank rank={4}/>
+            <Rank 
+              entries={user.entries}
+              name={user.name}
+            />
 
             <ImageLinkForm 
               onInputChange={this.onInputChange} 
@@ -145,8 +181,14 @@ class App extends Component {
           </>
         : (
           route === 'signin' 
-            ? <SignIn onRouteChange={this.onRouteChange} />
-            : <Register onRouteChange={this.onRouteChange} />
+            ? <SignIn 
+                loadUser={this.loadUser}
+                onRouteChange={this.onRouteChange} 
+              />
+            : <Register 
+                loadUser={this.loadUser}
+                onRouteChange={this.onRouteChange} 
+              />
           )
         }
       </div>
