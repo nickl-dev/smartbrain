@@ -79,64 +79,30 @@ class App extends Component {
     this.setState({ faceBoundsBox });
   }
 
-  getClarifaiApiOptions = (imageUrl) => {
-    
-    const { REACT_APP_CLARIFAI_API_PAT, REACT_APP_CLARIFAI_API_USER_ID, REACT_APP_CLARIFAI_API_APP_ID } = process.env;
-    // Your PAT (Personal Access Token) can be found in the portal under Authentification
-    // Specify the correct user_id/app_id pairings
-    // Since you're making inferences outside your app's scope
-  
-    ///////////////////////////////////////////////////////////////////////////////////
-    // YOU DO NOT NEED TO CHANGE ANYTHING BELOW THIS LINE TO RUN THIS EXAMPLE
-    ///////////////////////////////////////////////////////////////////////////////////
-  
-    const raw = JSON.stringify({
-        "user_app_id": {
-            "user_id": REACT_APP_CLARIFAI_API_USER_ID,
-            "app_id": REACT_APP_CLARIFAI_API_APP_ID
-        },
-        "inputs": [
-            {
-                "data": {
-                    "image": {
-                        "url": imageUrl
-                    }
-                }
-            }
-        ]
-    });
-  
-    return {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Key ' + REACT_APP_CLARIFAI_API_PAT
-        },
-        body: raw
-    };
-  }
-
   getFaceDetectionData = async () => {
-    // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
-    // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
-    // this will default to the latest version_id
     try {
-      const response = await fetch(`https://api.clarifai.com/v2/models/face-detection/outputs`, 
-      this.getClarifaiApiOptions(this.state.input)
-    );
+      const response = await fetch('http://localhost:3000/imageurl', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ input: this.state.input })
+      })
 
       const data = await response.json();
 
       if (data) {
-        const entryResponse = await fetch('http://localhost:3000/image', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: this.state.user.id })
-        })
-
-        const entryData = await entryResponse.json();
-
-        if (entryData) this.setState(Object.assign(this.state.user, { entries: entryData }))
+        try {
+          const entryResponse = await fetch('http://localhost:3000/image', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: this.state.user.id })
+          })
+  
+          const entryCount = await entryResponse.json();
+  
+          if (entryCount) this.setState(Object.assign(this.state.user, { entries: entryCount }))
+        } catch (error) {
+          throw error;
+        }
       }
       
       this.displayFaceBox(this.calculateFaceLocation(data));
