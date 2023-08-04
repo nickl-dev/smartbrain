@@ -8,24 +8,26 @@ import React, { Component } from 'react';
 import Register from './components/Register/Register';
 import SignIn from './components/SignIn/SignIn';
 
+const initialState = {
+  imageUrl: '',
+  input: '',
+  faceBoundsBox: {},
+  isSignedIn: false,
+  route: 'signin',
+  user: {
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
+};
+
 class App extends Component {
 
   constructor () {
     super();
-    this.state = {
-      imageUrl: '',
-      input: '',
-      faceBoundsBox: {},
-      isSignedIn: false,
-      route: 'signin',
-      user: {
-        id: '',
-        name: '',
-        email: '',
-        entries: 0,
-        joined: ''
-      }
-    };
+    this.state = initialState;
   }
 
   onInputChange = (event) => {
@@ -39,7 +41,7 @@ class App extends Component {
 
   onRouteChange = (route) => {
     if (route === 'signout') {
-      this.setState({ isSignedIn: false })
+      this.setState(initialState)
     } else if (route === 'home') {
       this.setState({ isSignedIn: true })
     }
