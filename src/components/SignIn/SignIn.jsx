@@ -97,6 +97,13 @@ class SignIn extends Component {
                 Sign In
               </button>
             </div>
+
+            <p
+              className='flex text-sm hover:text-blue-500 cursor-pointer mt-2 font-oswald' 
+              onClick={() => this.props.onRouteChange('register')}
+            >
+              Register
+            </p>
           </form>
         </div>
       </div>

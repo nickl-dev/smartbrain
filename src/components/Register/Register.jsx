@@ -113,7 +113,7 @@ class Register extends Component {
               />
             </div>
   
-            <div className="flex items-center justify-between">
+            <div className="flex ">
               <button 
                 className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline font-oswald focus:bg-blue-600" 
                 type="submit"
@@ -121,6 +121,8 @@ class Register extends Component {
                 Register
               </button>
             </div>
+
+            <p className="flex cursor-pointer font-oswald text-sm mt-2 w-auto hover:text-blue-500"onClick={() => this.props.onRouteChange('signin')}>Sign In</p>
           </form>
         </div>
       </div>
